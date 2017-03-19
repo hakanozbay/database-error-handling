@@ -16,11 +16,6 @@ public class DatabaseExceptionUtilities {
 	
 	private SQLErrorCodes sqlErrorCodes;
 	
-	public boolean isExceptionADatabaseError(Exception exception)
-	{
-		return (exception instanceof SQLException);
-	}
-	
 	public boolean isExceptionADeadlock(SQLException exception)
 	{
 		String errorCode = getErrorCode(exception);
