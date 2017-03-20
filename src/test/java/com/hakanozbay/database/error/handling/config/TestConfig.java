@@ -18,7 +18,7 @@ public class TestConfig {
 	{
 		EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
 		EmbeddedDatabase db = builder
-			.setType(EmbeddedDatabaseType.HSQL)
+			.setType(EmbeddedDatabaseType.H2)
 			.addDefaultScripts()
 			.build();
 		return db;
