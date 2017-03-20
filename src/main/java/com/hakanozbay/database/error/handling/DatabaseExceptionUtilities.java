@@ -3,7 +3,9 @@ package com.hakanozbay.database.error.handling;
 import java.sql.SQLException;
 import java.util.Arrays;
 
-import org.springframework.beans.factory.annotation.Value;
+import javax.sql.DataSource;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.support.SQLErrorCodes;
 import org.springframework.jdbc.support.SQLErrorCodesFactory;
 import org.springframework.stereotype.Component;
@@ -11,8 +13,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class DatabaseExceptionUtilities {
 	
-	@Value("${database.name}")
-	private String databaseName;
+	@Autowired
+	DataSource dataSource;
 	
 	private SQLErrorCodes sqlErrorCodes;
 	
@@ -57,7 +59,7 @@ public class DatabaseExceptionUtilities {
 	private SQLErrorCodes getSqlErrorCodes()
 	{
 		if (sqlErrorCodes == null)
-			sqlErrorCodes = SQLErrorCodesFactory.getInstance().getErrorCodes(databaseName);
+			sqlErrorCodes = SQLErrorCodesFactory.getInstance().getErrorCodes(dataSource);
 		
 		return sqlErrorCodes;
 	}

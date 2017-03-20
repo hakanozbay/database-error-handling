@@ -6,28 +6,22 @@ import javax.sql.DataSource;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DatabaseService {
 
-	@Value("${database.name}")
-	private String databaseName;
-	
 	@Autowired
 	DatabaseExceptionUtilities databaseExceptionUtilities;
 	
+	@Autowired
+	DataSource dataSource;
 	
 	public void executeStatement(String sql)
 	{
 		try
 		{
-			DataSource databaseConnection = getDatabaseConnection();
-			databaseConnection.getConnection().createStatement().execute(sql);
+			dataSource.getConnection().createStatement().execute(sql);
 		}
 		catch(SQLException e)
 		{
@@ -59,13 +53,4 @@ public class DatabaseService {
 			
 	}
 	
-	protected DataSource getDatabaseConnection() 
-	{
-		EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
-		EmbeddedDatabase db = builder
-			.setType(EmbeddedDatabaseType.valueOf(databaseName.toUpperCase()))
-			.addDefaultScripts()
-			.build();
-		return db;
-	}
 }
