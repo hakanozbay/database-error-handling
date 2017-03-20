@@ -1,6 +1,6 @@
 # Database error handling using Java and Spring
 
-This is an example demonstration on how specific database interaction errors can be captured and identified allowing to write error recoverable code. This example is written in Java 8, using [Spring][] and [Apache Commons Lang][] libraries.
+This is an example demonstration on how specific database interaction errors can be captured and identified allowing to write error recoverable code. This example is written in Java 8, using [Spring][] and [Apache Commons Lang](https://commons.apache.org/proper/commons-lang/) libraries.
 
 # Overview
 
@@ -54,7 +54,7 @@ public boolean isExceptionADataIntegrityViolation(SQLException exception)
 ```
 The expectation is for the exception to be of the `SQLException` type. There are the specific methods `getErrorCode()` and `getSQLState()` in this class that are used to retrieve the error codes. These codes are then used to scan through the collection of error codes to match with. A match then identifies the error codes to be of the specific database error type. 
 
-As an example implementation of this I have created a `DatabaseService` class that will catch an SQLException and handle it:
+As an example implementation of this I have created a `DatabaseService` class that will catch an `SQLException` and handle it:
 
 ```Java
 	@Autowired
