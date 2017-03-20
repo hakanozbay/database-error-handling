@@ -6,13 +6,13 @@ This is an example demonstration on how specific database interaction errors can
 
 There are common database errors occurring that are not properly handled, which jeopardizes the continuing operation of your software, causing manual intervention to resolve issues. Defensive programming techniques should be implemented for self recovery from these errors, making your software behave in a predicted manner. This allows for greater control of your software, a more intelligent workflow, reduction in errors and manual intervention, saving time for your business and reducing support efforts.
 
-The most frequent and unhandled errors that I have come across are deadlocks; duplicates exisitng in the table the software is writing to; data integrity violation (such as null data in non nullable columns); Badly formatted SQL queries
+The most frequent and unhandled errors that I have come across are deadlocks; duplicates exisitng in the table the software is writing to; data integrity violation (such as null data in non nullable columns); Badly formatted SQL queries.
 
 I have devised a solution to help identify which specific database error caused an exception, providing the first step towards self recovery.
 
 # Walkthrough
 
-The solution I have written leverages the Spring JDBC library, writing a wrapper class for their [SQLErrorCodes][] and [SQLErrorCodesFactory][] class and loading the relevant database error codes from their [sql-error-codes.xml][] resource file.
+The solution I have written leverages the Spring JDBC library, writing a wrapper class for their [SQLErrorCodes][] and [SQLErrorCodesFactory][] classes and loading the relevant database error codes from their [sql-error-codes.xml][] resource file.
 
 The wrapper class I have written is `DatabaseExceptionUtilities`. It integrates with the Spring resources in this manner:
 
@@ -30,7 +30,7 @@ The wrapper class I have written is `DatabaseExceptionUtilities`. It integrates 
 		return sqlErrorCodes;
 	}
 ```
-The `dataSource` variable is a dependency injection from an exisitng dataSource bean that would be created in a Spring configuration file. Based on this value the relevant database error codes are loaded and provided. 
+The `dataSource` variable is a dependency injection from an exisitng dataSource bean that would be created in a Spring configuration file. Based on this the relevant database error codes are loaded and provided. 
 
 The remainder of the class defines wrapper methods that are error specific which can be called specifically by utilizing classes. An exmaple method defined is to check if the error is about data integrity violations:
 
@@ -99,7 +99,7 @@ As an example implementation of this I have created a `DatabaseService` class th
 			
 	}
 ```
-The exception can be an inherited sub type of SQLException in which case it can be caught with the first catch statement, or it may be a nested exception in the hierearchy of exceptions that are thrown already, which is where the second catch statement will handle it. Looking at the second catch statement it utilises the [ExceptionUtils][] class from the Apache Commons Lang library:
+The exception can be an inherited sub type of SQLException in which case it can be caught with the first catch statement, or it may be a nested exception in the hierarchy of exceptions that are thrown already, which is where the second catch statement will handle it. Looking at the second catch statement it utilises the [ExceptionUtils][] class from the Apache Commons Lang library:
 
 ```java
 		catch (Exception e)
@@ -119,7 +119,7 @@ In the handling method it checks for each particular error type until it finds a
 
 There is a `DatabaseServiceTest` that can be run to test the 3 scenarios of bad grammar, duplicate and data integrity violations. 
 
-The `TestConfig` class creates an embedded database (as the dataSource bean) from which you specify to use [H2][], [Derby][] or [HSQL][]. The current implementation works best with H2 and Derby. It will also load in the `schema.sql` file and the 'data.sql' file ( found in the src/test/resources folder) before running the test:
+The `TestConfig` class creates an embedded database (as the dataSource bean) from which you specify to use [H2][], [Derby][] or [HSQL][]. The current implementation works best with H2 and Derby. It will also load in the `schema.sql` file and the `data.sql` file (found in the src/test/resources folder) before running the test:
 
 ### schema.sql
 ```sql
@@ -157,7 +157,7 @@ This pre-exisitng state before the test will allow for the duplicate and data in
 	}
 ```
 
-When the tests are run with *H2* the output is:
+When the tests are run with **H2** the output is:
 
 ```
 Data Integrity Violation Exception: org.h2.jdbc.JdbcSQLException: NULL not allowed for column "FIRSTNAME"; SQL statement:
@@ -170,7 +170,7 @@ Bad Grammar Exception: org.h2.jdbc.JdbcSQLException: Syntax error in SQL stateme
 hello [42001-194]
 ```
 
-Similarly with *Derby*:
+Similarly with **Derby**:
 
 ```
 Data Integrity Violation Exception: java.sql.SQLIntegrityConstraintViolationException: Column 'FIRSTNAME'  cannot accept a NULL value.
@@ -181,7 +181,7 @@ Bad Grammar Exception: java.sql.SQLSyntaxErrorException: Syntax error: Encounter
 
 ``` 
 
-However when run with *HSQL* there is only 1 message output:
+However with **HSQL** there is only 1 message output:
 
 ```
 Duplicate Exception: java.sql.SQLIntegrityConstraintViolationException: integrity constraint violation: unique constraint or index violation: IDX0
@@ -192,7 +192,7 @@ The reason for this depends on the both the database that is used and the framew
 # Caveats
 Successful implementation of this strategy depends on 2 things: The database you are using and the database I/O framework you are using.
 
-The current strategy has worked well when using Java's native DataSource class without any additional frameworks. This has allowed for the `SQLException` class to be identified as the exception or in the exception hierarchy. When using a framework instead like Spring JDBC, Spring Data JPA and Hibernate for database I/O work, the exceptions that are thrown may be wrapped into the framework's own exception type that does not use `SQLException` explicitly and may have an adpated implementation of its own. The `DatabaseExceptionUtilities` class would need to be altered to accomodate for this variance of exception object if possible. 
+The current strategy in the demonstration has worked well when using Java's native DataSource class without any additional frameworks. This has allowed for the `SQLException` class to be identified as the exception or in the exception hierarchy. When using a framework instead like Spring JDBC, Spring Data JPA and Hibernate for database I/O work, the exceptions that are thrown may be wrapped into the framework's own exception type that does not use `SQLException` explicitly and may have an adapted implementation of its own. The `DatabaseExceptionUtilities` class would need to be altered to accomodate for this variance of exception object if possible. 
 
 The database itself is also a variable. The HSQL test only worked for duplicates. In the other 2 tests a `HsqlException` was thrown instead without any trace of `SQLException`. In this case we would either catch this particular exception type or introduce one of the database I/O frameworks in order to utilise their common exception object formats instead. 
 
