@@ -157,7 +157,7 @@ This pre-exisitng state before the test will allow for the duplicate and data in
 	}
 ```
 
-When the tests are run with H2 the output is:
+When the tests are run with *H2* the output is:
 
 ```
 Data Integrity Violation Exception: org.h2.jdbc.JdbcSQLException: NULL not allowed for column "FIRSTNAME"; SQL statement:
@@ -170,7 +170,7 @@ Bad Grammar Exception: org.h2.jdbc.JdbcSQLException: Syntax error in SQL stateme
 hello [42001-194]
 ```
 
-Similarly with Derby:
+Similarly with *Derby*:
 
 ```
 Data Integrity Violation Exception: java.sql.SQLIntegrityConstraintViolationException: Column 'FIRSTNAME'  cannot accept a NULL value.
@@ -181,21 +181,24 @@ Bad Grammar Exception: java.sql.SQLSyntaxErrorException: Syntax error: Encounter
 
 ``` 
 
-However when we run it with HSQL there is only 1 message output:
+However when run with *HSQL* there is only 1 message output:
 
 ```
 Duplicate Exception: java.sql.SQLIntegrityConstraintViolationException: integrity constraint violation: unique constraint or index violation: IDX0
 ```
 
-The reason for this depends on the both the database that is used and the library used to do the database interaction with. More details in the section below 
+The reason for this depends on the both the database that is used and the framework used to do the database interaction with. More details in the section below.
 
 # Caveats
-Successful implementation of this strategy depends on 2 things: The database you are using and the Database I/O library you using.
+Successful implementation of this strategy depends on 2 things: The database you are using and the database I/O framework you are using.
 
-The current strategy has worked well when just using Java's native DataSource class  
+The current strategy has worked well when using Java's native DataSource class without any additional frameworks. This has allowed for the `SQLException` class to be identified as the exception or in the exception hierarchy. When using a framework instead like Spring JDBC, Spring Data JPA and Hibernate for database I/O work, the exceptions that are thrown may be wrapped into the framework's own exception type that does not use `SQLException` explicitly and may have an adpated implementation of its own. The `DatabaseExceptionUtilities` class would need to be altered to accomodate for this variance of exception object if possible. 
 
+The database itself is also a variable. The HSQL test only worked for duplicates. In the other 2 tests a `HsqlException` was thrown instead without any trace of `SQLException`. In this case we would either catch this particular exception type or introduce one of the database I/O frameworks in order to utilise their common exception object formats instead. 
 
 # Conclusion
+
+Writing error handling code for database interaction errors can be straight forward and written cleanly when leveraging existing frameworks effectively. The specific implementation details for this will vary slightly based on the database you are using and the frameworks that you use for performing the database interaction tasks. However the approach and structure to achieve this would be the same as outlined in this demonstration.
 
 [Spring]: https://spring.io/
 [Aapache Commons Lang]: https://commons.apache.org/proper/commons-lang/
